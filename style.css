@@ -66,7 +66,7 @@ body {
 } */
 
 .image-title-wrap {
-  padding: 0 15px 15px 15px;
+  padding: 20px 15px 15px 15px;
   color: #222;
 }
 
@@ -168,3 +168,11 @@ body {
       }
 
 
+/* progress bar */
+.progress.col-8 {
+  margin: 0 auto;
+}
+
+/* #progress_bar {
+  padding-left: 10px;
+} */

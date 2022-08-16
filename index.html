@@ -107,23 +107,7 @@
       </div>
       
   </section>
-<div>
-  <div class="progress">
-    <div class="progress-bar progress-bar-striped" role="progressbar" aria-label="Default striped example" style="width: 10%" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100"></div>
-  </div>
-  <div class="progress">
-    <div class="progress-bar progress-bar-striped bg-success" role="progressbar" aria-label="Success striped example" style="width: 25%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
-  </div>
-  <div class="progress">
-    <div class="progress-bar progress-bar-striped bg-info" role="progressbar" aria-label="Info striped example" style="width: 50%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
-  </div>
-  <div class="progress">
-    <div class="progress-bar progress-bar-striped bg-warning" role="progressbar" aria-label="Warning striped example" style="width: 75%" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
-  </div>
-  <div class="progress">
-    <div class="progress-bar progress-bar-striped bg-danger" role="progressbar" aria-label="Danger striped example" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
-  </div>
-</div>
+
 
   <div class="album py-5 bg-light">
     <div class="container">
@@ -154,11 +138,11 @@
                 
                 <p class="result-messege"></p>
                 
-                <div id="label-container"></div>
+                <div id="label-container row"></div>
 
                 
 
-                <div class="image-title-wrap">
+                <div class="image-title-wrap pt-10">
                   <button type="button" onclick="removeUpload()" class="btn btn-danger" style="--bs-btn-padding-y: .5rem; --bs-btn-padding-x: 8.5rem; --bs-btn-font-size: .75rem;">Remove</button>
                 </div>
               </div>
@@ -257,10 +241,11 @@ $('.image-upload-wrap').bind('dragover', function () {
         // Note: the pose library adds "tmImage" object to your window (window.tmImage)
         model = await tmImage.load(modelURL, metadataURL);
         maxPredictions = model.getTotalClasses();
-        labelContainer = document.getElementById("label-container");
+        labelContainer = document.getElementById("label-container row");
         for (let i = 0; i < maxPredictions; i++) { // and class labels
             let divLabel = labelContainer.appendChild(document.createElement("div"));
             divLabel.classList.add("progress")
+            divLabel.classList.add("col-8")
             // let underDiv = divLabel.appendChild(document.createElement("div"));
             // underDiv.classList.add("progress-bar progress-bar-striped")
         }
@@ -292,16 +277,42 @@ $('.image-upload-wrap').bind('dragover', function () {
         $('.result-messege').html(resultMessege);
         
         for (let i = 0; i < maxPredictions; i++) {
-            const classPrediction =
-                prediction[i].className + ": " + prediction[i].probability.toFixed(2);
-            console.log(classPrediction)
+          const classPrediction = prediction[i].className.split('_')[0]
+          console.log(classPrediction)
             
-            labelContainer.childNodes[i].innerHTML = classPrediction;
+          // var bar = "<div class='bar-container position-relative container'><div class='" 
+          //   + prediction[i].className + "-box'></div><div class='d-flex justify-content-center align-items-center " 
+          //   + prediction[i].className + "-bar' style='width: " + barWidth + "'><span class='d-block percent-text'>" 
+          //   + Math.round(prediction[i].probability.toFixed(2) * 100) 
+          //   + "%</span></div></div>";
+            
+          let bar = "";
+          let barWidth = prediction[i].probability.toFixed(2) * 100;
+          
+          if (prediction[i].probability.toFixed(2) > 0.1) {
+            barWidth = Math.round(prediction[i].probability.toFixed(2) * 100);
+          } else if (prediction[i].probability.toFixed(2) >= 0.01) {
+            barWidth = "4%";
+          } else {
+            barWidth = "2%";
+          }
+
+          if(prediction[i].className == "SM_man"){
+            bar = "<div class='progress-bar progress-bar-striped bg-success' id='progress_bar' role='progressbar' aria-label='Success striped example' style='width: "+barWidth+"%' aria-valuenow='"+barWidth+"' aria-valuemin='10' aria-valuemax='50'>"+barWidth+"%</div>"
+          }else if(prediction[i].className == "YG_man"){
+            bar = "<div class='progress-bar progress-bar-striped bg-info' id='progress_bar' role='progressbar' aria-label='Info striped example' style='width: "+barWidth+"%' aria-valuenow='"+barWidth+"' aria-valuemin='10' aria-valuemax='50'>"+barWidth+"</div>"
+          }else if(prediction[i].className == "JYP_man"){
+            bar = "<div class='progress-bar progress-bar-striped bg-warning' id='progress_bar' role='progressbar' aria-label='Warning striped example' style='width: "+barWidth+"%' aria-valuenow='"+barWidth+"' aria-valuemin='10' aria-valuemax='50'>"+barWidth+"</div>"
+          }else if(prediction[i].className == "HIVE_man"){
+            bar = "<div class='progress-bar progress-bar-striped bg-danger' id='progress_bar' role='progressbar' aria-label='Danger striped example' style='width: "+barWidth+"%' aria-valuenow='"+barWidth+"' aria-valuemin='10' aria-valuemax='50'>"+barWidth+"</div>"
+          }
+
+          labelContainer.childNodes[i].innerHTML = classPrediction + bar;
 
 
-            // var label = "<div class='animal-label d-flex align-items-center'>" + labelTitle + "</div>"
-            // var bar = "<div class='bar-container position-relative container'><div class='" + prediction[i].className + "-box'></div><div class='d-flex justify-content-center align-items-center " + prediction[i].className + "-bar' style='width: " + barWidth + "'><span class='d-block percent-text'>" + Math.round(prediction[i].probability.toFixed(2) * 100) + "%</span></div></div>"
-            // labelContainer.childNodes[i].innerHTML = label + bar;
+          // var label = "<div class='animal-label d-flex align-items-center'>" + labelTitle + "</div>"
+          // var bar = "<div class='bar-container position-relative container'><div class='" + prediction[i].className + "-box'></div><div class='d-flex justify-content-center align-items-center " + prediction[i].className + "-bar' style='width: " + barWidth + "'><span class='d-block percent-text'>" + Math.round(prediction[i].probability.toFixed(2) * 100) + "%</span></div></div>"
+          // labelContainer.childNodes[i].innerHTML = label + bar;
         }
     }
 </script>
