@@ -128,6 +128,7 @@
 
                 <input class="file-upload-input" type='file' onchange="readURL(this);" accept="image/*" />
               
+                <!-- file upload  -->
               <div class="file-upload-content">
                 <img class="file-upload-image" id="face-image" src="#" alt="your image" />
                 
@@ -208,9 +209,18 @@
 function removeUpload() {
   $('.file-upload-input').replaceWith($('.file-upload-input').clone());
   $('.file-upload-content').hide();
-  // $('.progress col-8').removeClass();
   $('.image-upload-wrap').show();
+
+  // let prog = document.getElementsByClassName("progress col-8");
+  // prog.removeClass();
+  
+  // let prog = document.getElementById('label-container row')
+  // prog.removeChild(prog.children);
+
+  let prog = document.getElementsById('prog');
+  prog.remove();
 }
+
 $('.image-upload-wrap').bind('dragover', function () {
 		$('.image-upload-wrap').addClass('image-dropping');
 	});
@@ -241,11 +251,13 @@ $('.image-upload-wrap').bind('dragover', function () {
         // Note: the pose library adds "tmImage" object to your window (window.tmImage)
         model = await tmImage.load(modelURL, metadataURL);
         maxPredictions = model.getTotalClasses();
+        console.log("maxPredictions : " + maxPredictions);
         labelContainer = document.getElementById("label-container row");
         for (let i = 0; i < maxPredictions; i++) { // and class labels
             let divLabel = labelContainer.appendChild(document.createElement("div"));
             divLabel.classList.add("progress")
             divLabel.classList.add("col-8")
+            divLabel.id = 'prog'
             // let underDiv = divLabel.appendChild(document.createElement("div"));
             // underDiv.classList.add("progress-bar progress-bar-striped")
         }
@@ -313,6 +325,7 @@ $('.image-upload-wrap').bind('dragover', function () {
           // var label = "<div class='animal-label d-flex align-items-center'>" + labelTitle + "</div>"
           // var bar = "<div class='bar-container position-relative container'><div class='" + prediction[i].className + "-box'></div><div class='d-flex justify-content-center align-items-center " + prediction[i].className + "-bar' style='width: " + barWidth + "'><span class='d-block percent-text'>" + Math.round(prediction[i].probability.toFixed(2) * 100) + "%</span></div></div>"
           // labelContainer.childNodes[i].innerHTML = label + bar;
+
         }
     }
 </script>
