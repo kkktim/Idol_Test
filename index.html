@@ -6,7 +6,7 @@
   <meta name="description" content="">
   <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
   <meta name="generator" content="Hugo 0.101.0">
-  <title>Document</title>
+  
   <link rel="stylesheet" href="style.css">
   <link rel="canonical" href="https://getbootstrap.com/docs/5.2/examples/album/">
   
@@ -22,29 +22,18 @@
   <link rel="mask-icon" href="/docs/5.2/assets/img/favicons/safari-pinned-tab.svg" color="#712cf9">
   <link rel="icon" href="/docs/5.2/assets/img/favicons/favicon.ico">
   <meta name="theme-color" content="#712cf9">
+
+  <meta name="description" content="Typescript UI Controls" />
+  <meta name="author" content="Syncfusion" />
+  <link href="//cdn.syncfusion.com/ej2/20.2.43/ej2-base/styles/fabric.css" rel="stylesheet" />
+  <link href="//cdn.syncfusion.com/ej2/20.2.43/ej2-buttons/styles/fabric.css" rel="stylesheet" />
+  <link href="styles.css" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/systemjs/0.19.38/system.js"></script>
+  <script src="systemjs.config.js"></script>
+  
+  <title>IDOL TEST</title>
 </head>
 <body>
-  
-    <!-- <div>Teachable Machine Image Model</div>
-<button type="button" onclick="init()">Start</button>
-<button type="button" onclick="predict()">예측</button>
-
-<div class="file-upload">
-  <button class="file-upload-btn" type="button" onclick="$('.file-upload-input').trigger( 'click' )">Add Image</button>
-
-  <div class="image-upload-wrap">
-    <input class="file-upload-input" type='file' onchange="readURL(this);" accept="image/*" />
-    <div class="drag-text">
-      <h3>Drag and drop a file or select add Image</h3>
-    </div>
-  </div>
-  <div class="file-upload-content">
-    <img class="file-upload-image" id="face-image" src="#" alt="your image" />
-    <div class="image-title-wrap">
-      <button type="button" onclick="removeUpload()" class="remove-image">Remove <span class="image-title">Uploaded Image</span></button>
-    </div>
-  </div>
-</div> -->
 
 <!--  bootstrap html -->
 <header>
@@ -66,6 +55,12 @@
             <li><a href="#" class="text-white">Follow on Twitter</a></li>
             <li><a href="#" class="text-white">Like on Facebook</a></li>
             <li><a href="#" class="text-white">Email me</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="text-white">Open Source License</h4>
+          <ul>
+            <li></li>
           </ul>
         </div>
       </div>
@@ -94,13 +89,21 @@
             사진을 업로드 또는 촬영하여 테스트를 진행해보세요.<br/>
             Please upload or take a photo to proceed with the test.
         </p>
-        
-        <p class="button-group">
-          <button type="button" class="btn btn-outline-primary">남자</button>
-          <button type="button" class="btn btn-outline-danger">여자</button>
-        </p>
+      </div>      
+  </section>
+  
+  <h3 class="pb-2 d-flex justify-content-center">성별을 선택하세요</h3>
+  <section class="d-flex justify-content-center">
+      <p class="d-flex align-items-center pr-5">여자</p>
+      <div>
+          <input type="checkbox" id="gender">
+          <label for="gender">
+              <span class="knob">
+                  <i></i>
+              </span>
+          </label>
       </div>
-      
+      <p class="d-flex align-items-center pl-5">남자</p>
   </section>
 
 
@@ -136,21 +139,19 @@
                 
                 <div id="label-container row"></div>
 
-                
+                <!-- Go to www.addthis.com/dashboard to customize your tools -->
+                <div class="addthis_inline_share_toolbox"></div>
 
                 <div class="image-title-wrap pt-10">
                   <button type="button" onclick="removeUpload()" class="btn btn-danger" style="--bs-btn-padding-y: .5rem; --bs-btn-padding-x: 8.5rem; --bs-btn-font-size: .75rem;">Remove</button>
                 </div>
                 
-                <!-- Go to www.addthis.com/dashboard to customize your tools -->
-                <div class="addthis_inline_share_toolbox"></div>
             
               </div>
 
               <div class="card-body">
-                <p class="card-text">
-                  진행 버튼을 눌러 시작해보세요.
-                  사진은 어디에도 전송되거나 저장되지 않습니다.
+                <p class="card-text text-center">
+                  사진은 전송되거나 저장되지 않습니다.
                 </p>
                 <div class="d-flex justify-content-between">
                 </div>
@@ -179,6 +180,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.3.1/dist/tf.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@0.8/dist/teachablemachine-image.min.js"></script>
+
 <!-- codepen-js -->
 <script>
     function readURL(input) {
@@ -235,7 +237,173 @@ $('.image-upload-wrap').bind('dragover', function () {
     // https://github.com/googlecreativelab/teachablemachine-community/tree/master/libraries/image
 
     // the link to your model provided by Teachable Machine export panel
-    const URL = "https://teachablemachine.withgoogle.com/models/A1Ka3bJ6U/";
+    let URL;
+    const urlMale = "https://teachablemachine.withgoogle.com/models/A1Ka3bJ6U/";
+    const urlFemale = "https://teachablemachine.withgoogle.com/models/BXQzouStZ/";
+    
+    
+    let model, webcam, labelContainer, maxPredictions;
+
+    // Load the image model and setup the webcam
+    async function init() {
+      if(document.getElementById("gender").checked){
+        URL = urlMale;  
+      }else{
+        URL = urlFemale;
+      }
+      console.log("call the machine")
+      const modelURL = URL + "model.json";
+      const metadataURL = URL + "metadata.json";
+      model = await tmImage.load(modelURL, metadataURL);
+      maxPredictions = model.getTotalClasses();
+      console.log("maxPredictions : " + maxPredictions);
+      labelContainer = document.getElementById("label-container row");
+      for (let i = 0; i < maxPredictions; i++) { // and class labels
+          let divLabel = labelContainer.appendChild(document.createElement("div"));
+          divLabel.classList.add("progress")
+          divLabel.classList.add("col-8")
+          divLabel.id = 'prog'
+      }
+    }
+
+    async function predict() {
+        let image = document.getElementById("face-image");
+        const prediction = await model.predict(image, false);
+        prediction.sort((a, b) => parseFloat(b.probability) - parseFloat(a.probability));
+        console.log(prediction[0].className);
+        let resultTitle, resultExplain, resultCeleb;
+        if(document.getElementById("gender").checked){
+          switch (prediction[0].className) {
+                    case "SM_man":
+                        resultTitle = ""
+                        resultExplain = ""
+                        resultCeleb = "대표 아이돌 : 최시원, 세훈, 수호, 최강창민"
+                        break;
+                    case "YG_man":
+                        resultTitle = ""
+                        resultExplain = ""
+                        resultCeleb = "대표 아이돌 : GD, 태양, 탑, 송민호"
+                        break;
+                    case "JYP_man":
+                        resultTitle = ""
+                        resultExplain = ""
+                        resultCeleb = "대표 아이돌 :  이준호, 택연, 임슬옹, young k"
+                        break;
+                    case "HIVE_man":
+                        resultTitle = ""
+                        resultExplain = ""
+                        resultCeleb = "대표 아이돌 :  뷔, 정국, 진, RM"
+                        break;
+                    default:
+                        resultTitle = "알수없음"
+                        resultExplain = ""
+                        resultCeleb = ""
+                }
+        }else{
+          switch (prediction[0].className) {
+                    case "SM_girl":
+                        resultTitle = ""
+                        resultExplain = ""
+                        resultCeleb = "대표 아이돌 : 윤아, 카리나, 윈터, 보아"
+                        break;
+                    case "YG_girl":
+                      resultTitle = ""
+                        resultExplain = ""
+                        resultCeleb = "대표 아이돌 : 지수, 제니, 박봄, 산다라박"
+                        break;
+                    case "JYP_girl":
+                        resultTitle = ""
+                        resultExplain = ""
+                        resultCeleb = "대표 아이돌 : 예지, 쯔위, 사나, 나연"
+                        break;
+                    case "HIVE_girl":
+                        resultTitle = ""
+                        resultExplain = ""
+                        resultCeleb = "대표 아이돌 : 카즈하, 이나경, 박지원, 이나경"
+                        break;
+                    default:
+                        resultTitle = "알수없음"
+                        resultExplain = ""
+                        resultCeleb = ""
+                }
+        }
+        switch(prediction[0].className){
+          case "SM_man":
+            resultMessege = "에스엠 상 이시군요"
+            break;
+          case "YG_man":
+            resultMessege = "와이지 상 이시군요"
+            break;
+          case "JYP_man":
+            resultMessege = "제와피 상 이시군요"
+            break;
+          case "HIVE_man":
+            resultMessege = "하이브 상 이시군요"
+            break;
+          default:
+            resultMessege = "알수없음"
+        }
+
+        var title = "<div class='" + prediction[0].className + "-animal-title'>" + resultTitle + "</div>"
+        var explain = "<div class='animal-explain pt-2'>" + resultExplain + "</div>"
+        var celeb = "<div class='" + prediction[0].className + "-animal-celeb pt-2 pb-2'>" + resultCeleb + "</div>"
+
+        $('.result-messege').html(resultMessege + explain + celeb);
+        
+        for (let i = 0; i < maxPredictions; i++) {
+          const classPrediction = prediction[i].className.split('_')[0]
+            
+          // var bar = "<div class='bar-container position-relative container'><div class='" 
+          //   + prediction[i].className + "-box'></div><div class='d-flex justify-content-center align-items-center " 
+          //   + prediction[i].className + "-bar' style='width: " + barWidth + "'><span class='d-block percent-text'>" 
+          //   + Math.round(prediction[i].probability.toFixed(2) * 100) 
+          //   + "%</span></div></div>";
+            
+          let bar = "";
+          let barWidth = prediction[i].probability.toFixed(2) * 100;
+          
+          if (prediction[i].probability.toFixed(2) > 0.1) {
+            barWidth = Math.round(prediction[i].probability.toFixed(2) * 100);
+          } else if (prediction[i].probability.toFixed(2) >= 0.01) {
+            barWidth = "4";
+          } else {
+            barWidth = "2";
+          }
+
+          if(prediction[i].className == "SM_man"){
+            bar = "<div class='progress-bar progress-bar-striped bg-success' id='progress_bar' role='progressbar' aria-label='Success striped example' style='width: "+barWidth+"%' aria-valuenow='"+barWidth+"' aria-valuemin='10' aria-valuemax='50'>"+barWidth+"%</div>"
+          }else if(prediction[i].className == "YG_man"){
+            bar = "<div class='progress-bar progress-bar-striped bg-info' id='progress_bar' role='progressbar' aria-label='Info striped example' style='width: "+barWidth+"%' aria-valuenow='"+barWidth+"' aria-valuemin='10' aria-valuemax='50'>"+barWidth+"%</div>"
+          }else if(prediction[i].className == "JYP_man"){
+            bar = "<div class='progress-bar progress-bar-striped bg-warning' id='progress_bar' role='progressbar' aria-label='Warning striped example' style='width: "+barWidth+"%' aria-valuenow='"+barWidth+"' aria-valuemin='10' aria-valuemax='50'>"+barWidth+"%</div>"
+          }else if(prediction[i].className == "HIVE_man"){
+            bar = "<div class='progress-bar progress-bar-striped bg-danger' id='progress_bar' role='progressbar' aria-label='Danger striped example' style='width: "+barWidth+"%' aria-valuenow='"+barWidth+"' aria-valuemin='10' aria-valuemax='50'>"+barWidth+"%</div>"
+          }else if(prediction[i].className == "SM_girl"){
+            bar = "<div class='progress-bar progress-bar-striped bg-success' id='progress_bar' role='progressbar' aria-label='Danger striped example' style='width: "+barWidth+"%' aria-valuenow='"+barWidth+"' aria-valuemin='10' aria-valuemax='50'>"+barWidth+"%</div>"
+          }else if(prediction[i].className == "YG_girl"){
+            bar = "<div class='progress-bar progress-bar-striped bg-info' id='progress_bar' role='progressbar' aria-label='Danger striped example' style='width: "+barWidth+"%' aria-valuenow='"+barWidth+"' aria-valuemin='10' aria-valuemax='50'>"+barWidth+"%</div>"
+          }else if(prediction[i].className == "JYP_girl"){
+            bar = "<div class='progress-bar progress-bar-striped bg-warning' id='progress_bar' role='progressbar' aria-label='Danger striped example' style='width: "+barWidth+"%' aria-valuenow='"+barWidth+"' aria-valuemin='10' aria-valuemax='50'>"+barWidth+"%</div>"
+          }else if(prediction[i].className == "HIVE_girl"){
+            bar = "<div class='progress-bar progress-bar-striped bg-danger' id='progress_bar' role='progressbar' aria-label='Danger striped example' style='width: "+barWidth+"%' aria-valuenow='"+barWidth+"' aria-valuemin='10' aria-valuemax='50'>"+barWidth+"%</div>"
+          }
+
+          labelContainer.childNodes[i].innerHTML = classPrediction + bar;
+
+
+          // var label = "<div class='animal-label d-flex align-items-center'>" + labelTitle + "</div>"
+          // var bar = "<div class='bar-container position-relative container'><div class='" + prediction[i].className + "-box'></div><div class='d-flex justify-content-center align-items-center " + prediction[i].className + "-bar' style='width: " + barWidth + "'><span class='d-block percent-text'>" + Math.round(prediction[i].probability.toFixed(2) * 100) + "%</span></div></div>"
+          // labelContainer.childNodes[i].innerHTML = label + bar;
+
+        }
+    }
+</script>
+<!-- <script type="text/javascript">
+    // More API functions here:
+    // https://github.com/googlecreativelab/teachablemachine-community/tree/master/libraries/image
+
+    // the link to your model provided by Teachable Machine export panel
+    const URL = "https://teachablemachine.withgoogle.com/models/BXQzouStZ/";
 
     let model, webcam, labelContainer, maxPredictions;
 
@@ -328,12 +496,15 @@ $('.image-upload-wrap').bind('dragover', function () {
 
         }
     }
-</script>
+</script> -->
+
 
 <script src="/docs/5.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" crossorigin="anonymous"></script>
 <!-- Go to www.addthis.com/dashboard to customize your tools -->
 <script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-630601964834d5eb"></script>
+
+
   
 </body>
 <!-- Copyright (c) 2022 by Bastian Andre (https://codepen.io/BastianAndre/pen/RpwOmp)
